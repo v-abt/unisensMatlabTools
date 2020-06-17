@@ -114,7 +114,7 @@ end
 
 function signal_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, samplestamp_end)
     %copy entry information
-    j_entry_cropped=j_unisens_cropped.addEntry(j_entry.clone(),false);
+    j_entry_cropped = j_unisens_cropped.addEntry(j_entry.clone(), false);
     
     % getting the path of the source unisens entries binary file
     pathSrc = char(concat(j_entry.getUnisens().getPath(), ...
@@ -123,8 +123,6 @@ function signal_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, sample
     % getting the path of the cropped unisens entries binary file
     pathDest = char(concat(j_entry_cropped.getUnisens().getPath(), ...
         j_entry_cropped.getId()));
-    
-    disp(['Cropping SignalEntry ''' char(j_entry_cropped.getId()) '''']);
     
     % get datatype 
     datatype = lower(char(j_entry_cropped.getDataType()));
