@@ -116,19 +116,41 @@ function signal_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, sample
     %copy entry information
     j_entry_cropped=j_unisens_cropped.addEntry(j_entry.clone(),false);
     
-    % getting the path
-    path = char(concat(j_entry_cropped.getUnisens().getPath(), ...
+    % getting the path of the source unisens entries binary file
+    pathSrc = char(concat(j_entry.getUnisens().getPath(), ...
+        j_entry.getId()));
+    
+    % getting the path of the cropped unisens entries binary file
+    pathDest = char(concat(j_entry_cropped.getUnisens().getPath(), ...
         j_entry_cropped.getId()));
     
     disp(['Cropping SignalEntry ''' char(j_entry_cropped.getId()) '''']);
     
     % get datatype 
     datatype = lower(char(j_entry_cropped.getDataType()));
+        
+    % set the data block size according to the data type    
+    size = 1;
+    if (strcmp(datatype, 'short16') || strcmp(datatype, 'int16'))
+        size = 2;
+    elseif (strcmp(datatype, 'int32') ...
+            || strcmp(datatype, 'integer*3') ...
+            || strcmp(datatype, 'float'))
+        size = 4;
+    elseif (strcmp(datatype, 'double'))
+        size = 8;
+    end
+    
+    % open the source unisens entries binary file in reading mode
+    fidSrc = fopen(pathSrc, 'r');
+    
+    % getting the channelCount of the source unisens entry
+    channelCount = j_entry.getChannelCount();
 	
-	% open the binary filesep
-    h = fopen(path, 'a');
+	% open the cropped unisens entries binary file in append mode
+    fidDest = fopen(pathDest, 'a');
 	
-	% data block size
+	% reading block size per iteration
 	blocksize = 10000000;
     
     %copy data piecewise
@@ -140,18 +162,29 @@ function signal_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, sample
         else
             count =  samplestamp_end - position;
         end
+        % replace read by low level fseek and fread
         % data = j_entry.read(position, count);
-        data = unisens_utility_bin_read(j_entry, position, count);
+        
+        % set the beginning of file marker to the current iterations
+        % position
+        fseek(fidSrc, channelCount * position * size, 'bof');
+        
+        % read the data
+        data = fread(fidSrc, [channelCount, count], datatype)';
+        
         if ~isempty(data)
             % append is terrible slow, try to use fwrite instead
             % j_entry_cropped.append(data);
-            fwrite(h, data, datatype);
+            fwrite(fidDest, data, datatype);
         end
         position = position + count;
     end
 	
-	% close the binary file	
-    fclose(h);
+	% close the source unisens entries binary file
+    fclose(fidSrc);
+	
+	% close the cropped unisens entries binary file	
+    fclose(fidDest);
 end
 
 function values_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, samplestamp_end)
