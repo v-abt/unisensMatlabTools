@@ -145,7 +145,7 @@ function signal_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, sample
         if ~isempty(data)
             % append is terrible slow, try to use fwrite instead
             % j_entry_cropped.append(data);
-            fwrite(h, data, lower(char(datatype)));
+            fwrite(h, data, datatype);
         end
         position = position + count;
     end
