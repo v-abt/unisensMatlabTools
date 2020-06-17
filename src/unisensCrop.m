@@ -116,21 +116,40 @@ function signal_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, sample
     %copy entry information
     j_entry_cropped=j_unisens_cropped.addEntry(j_entry.clone(),false);
     
+    % getting the path
+    path = char(concat(j_entry_cropped.getUnisens().getPath(), ...
+        j_entry_cropped.getId()));
+    
+    % get datatype 
+    datatype = lower(char(j_entry_cropped.getDataType()));
+	
+	% open the binary filesep
+    h = fopen(path, 'a');
+	
+	% data block size
+	blocksize = 10000000;
+    
     %copy data piecewise
     position = samplestamp_start;
     while (position < samplestamp_end)
 
-        if (samplestamp_end - position > 1000000)
-            count = 1000000;
+        if (samplestamp_end - position > blocksize)
+            count = blocksize;
         else
             count =  samplestamp_end - position;
         end
-        data = j_entry.read(position, count);
+        % data = j_entry.read(position, count);
+        data = unisens_utility_bin_read(j_entry, position, count);
         if ~isempty(data)
-            j_entry_cropped.append(data);
+            % append is terrible slow, try to use fwrite instead
+            % j_entry_cropped.append(data);
+            fwrite(h, data, lower(char(datatype)), position);
         end
         position = position + count;
     end
+	
+	% close the binary file	
+    fclose(h);
 end
 
 function values_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, samplestamp_end)
