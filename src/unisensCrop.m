@@ -120,6 +120,8 @@ function signal_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, sample
     path = char(concat(j_entry_cropped.getUnisens().getPath(), ...
         j_entry_cropped.getId()));
     
+    disp(['Cropping SignalEntry ''' char(j_entry_cropped.getId()) '''']);
+    
     % get datatype 
     datatype = lower(char(j_entry_cropped.getDataType()));
 	
@@ -143,7 +145,7 @@ function signal_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, sample
         if ~isempty(data)
             % append is terrible slow, try to use fwrite instead
             % j_entry_cropped.append(data);
-            fwrite(h, data, lower(char(datatype)), position);
+            fwrite(h, data, lower(char(datatype)));
         end
         position = position + count;
     end
