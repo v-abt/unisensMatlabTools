@@ -168,12 +168,12 @@ function signal_entry_crop(j_entry, j_unisens_cropped, samplestamp_start, sample
         fseek(fidSrc, channelCount * position * size, 'bof');
         
         % read the data
-        data = fread(fidSrc, [channelCount, count], datatype)';
+        data = fread(fidSrc, [channelCount, count], datatype);
         
         if ~isempty(data)
             % append is terrible slow, try to use fwrite instead
             % j_entry_cropped.append(data);
-            fwrite(fidDest, data', datatype);
+            fwrite(fidDest, data, datatype);
         end
         position = position + count;
     end
