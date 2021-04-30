@@ -1,9 +1,9 @@
 {
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"project": "unisensMatlabTools",
 	"dependencies": [
 		{
-			"version": "2.1.3",
+			"version": "2.2.0",
 			"repository": "https://cv-247/006_Tools/006_unisens_matlab.git"
 		}
 	]
