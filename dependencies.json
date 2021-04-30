@@ -3,7 +3,7 @@
 	"project": "unisensMatlabTools",
 	"dependencies": [
 		{
-			"branch": "release/2.2.0",
+			"version": "2.2.0",
 			"repository": "https://cv-247/006_Tools/006_unisens_matlab.git"
 		}
 	]
